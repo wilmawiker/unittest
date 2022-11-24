@@ -1,62 +1,49 @@
-import { addTodo, changeTodo, removeAllTodos } from "../ts/functions";
-import { Todo } from "./../ts/models/Todo";
+/**
+ * @jest-environment jsdom
+ */
 
-test("should add todo", () => {
+import { addTodo } from "../ts/functions";
+import * as functions from "../ts/main";
+import { createNewTodo } from "../ts/main";
+import { Todo } from "../ts/models/Todo";
+
+test("should find text in dom", () => {
+  document.body.innerHTML = `<button id="clearTodos">Ok</button>`;
+});
+
+test("should be able to click", () => {
   // Arrange
+  let spy = jest.spyOn(functions, "createNewTodo").mockReturnValue();
+  document.body.innerHTML = `<form id="newTodoForm"></form>`;
+
+  // Act
+  document.getElementById("newTodoForm")?.click();
+
+  // Assert
+  expect(spy).toHaveBeenCalled();
+});
+
+test("should call clearTodos", () => {
+  // Arrange
+  let spy = jest.spyOn(functions, "clearTodos").mockReturnValue();
+  document.body.innerHTML = `<button type="button" id="clearTodos">Rensa lista</button>`;
+
+  // Act
+  document.getElementById("clearTodos")?.click();
+
+  // Assert
+  expect(spy).toHaveBeenCalled();
+});
+
+test("should call on createHtml", () => {
+  // Arrange
+  let spy = jest.spyOn(functions, "createHtml").mockReturnValue();
   let todos: Todo[] = [new Todo("inlämning", false)];
-  let length = todos.length;
-  let text = "inlämningsuppgift";
+  let text = "inlämning";
 
   // Act
-  addTodo(text, todos);
-  // Assert
-  expect(todos.length).toBe(length + 1);
-  expect(todos[todos.length - 1].text).toBe(text);
-});
-
-test("should not add empty todo to list", () => {
-  // Arrange
-  let todos: Todo[] = [new Todo("Inlämning", false)];
-  let length = todos.length;
-  let text = "";
-
-  // Act
-  addTodo(text, todos);
+  createNewTodo(text, todos);
 
   // Assert
-  expect(todos.length).toBe(length);
-});
-
-test("should not add todo containing 2 or less characters to list", () => {
-  // Arrange
-  let todos: Todo[] = [new Todo("Inlämning", false)];
-  let length = todos.length;
-  let text = "lo";
-
-  // Act
-  addTodo(text, todos);
-
-  // Assert
-  expect(todos.length).toBe(length);
-});
-
-test("should change todo", () => {
-  // Arrange
-  let todos: Todo = new Todo("inlämning", false);
-
-  // Act
-  changeTodo(todos);
-  // Assert
-  expect(todos.done).toBe(true);
-});
-
-test("should remove todos", () => {
-  // Arrange
-  let todos: Todo[] = [new Todo("inlämning", false)];
-  let length = todos.length;
-
-  // Act
-  removeAllTodos(todos);
-  // Assert
-  expect(todos.length).toBe(length - 1);
+  expect(spy).toHaveBeenCalled();
 });
