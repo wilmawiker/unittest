@@ -40,6 +40,16 @@ test("should not add todo containing 2 or less characters to list", () => {
   expect(todos.length).toBe(length);
 });
 
+test("should change todo", () => {
+  // Arrange
+  let todos: Todo = new Todo("inlämning", false);
+
+  // Act
+  changeTodo(todos);
+  // Assert
+  expect(todos.done).toBe(true);
+});
+
 test("should remove todos", () => {
   // Arrange
   let todos: Todo[] = [new Todo("inlämning", false)];
