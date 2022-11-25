@@ -23,6 +23,7 @@ export function init() {
     }
   );
 }
+
 /*
 document.getElementById("sortTodos")?.addEventListener("click", () => {
   sortTodos(todos);
