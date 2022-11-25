@@ -3,31 +3,39 @@ import { Todo } from "./models/Todo";
 
 let todos: Todo[] = JSON.parse(localStorage.getItem("todos") || "[]");
 
-document.getElementById("clearTodos")?.addEventListener("click", () => {
-  exports.clearTodos(todos);
+export function init() {
+  // Button for clearing todos
+  document.getElementById("clearTodos")?.addEventListener("click", () => {
+    exports.clearTodos(todos);
+  });
+
+  // Input
+  (document.getElementById("newTodoForm") as HTMLFormElement)?.addEventListener(
+    "submit",
+    (e: SubmitEvent) => {
+      e.preventDefault();
+
+      let todoText: string = (
+        document.getElementById("newTodoText") as HTMLInputElement
+      ).value;
+      // console.log("Todos when creating", todos);
+      exports.createNewTodo(todoText, todos);
+    }
+  );
+}
+/*
+document.getElementById("sortTodos")?.addEventListener("click", () => {
+  sortTodos(todos);
 });
-
-(document.getElementById("newTodoForm") as HTMLFormElement)?.addEventListener(
-  "submit",
-  (e: SubmitEvent) => {
-    e.preventDefault();
-
-    let todoText: string = (
-      document.getElementById("newTodoText") as HTMLInputElement
-    ).value;
-    console.log("Todos when creating", todos);
-
-    exports.createNewTodo(todoText, todos);
-  }
-);
+*/
 
 export function createNewTodo(todoText: string, todos: Todo[]) {
-  let result = exports.addTodo(todoText, todos);
+  let result = addTodo(todoText, todos);
 
   if (result.success) {
     exports.createHtml(todos);
   } else {
-    displayError(result.error, true);
+    exports.displayError(result.error, true);
   }
 }
 
@@ -38,7 +46,7 @@ export function createHtml(todos: Todo[]) {
     "todos"
   ) as HTMLUListElement;
 
-  //todosContainer.innerHTML = "";
+  todosContainer.innerHTML = "";
 
   for (let i = 0; i < todos.length; i++) {
     let li: HTMLLIElement = document.createElement("li");
@@ -50,14 +58,15 @@ export function createHtml(todos: Todo[]) {
     li.classList.add("todo__text");
     li.innerHTML = todos[i].text;
     li.addEventListener("click", () => {
-      exports.toggleTodo(todos[i]);
+      toggleTodo(todos[i]);
     });
 
     todosContainer.appendChild(li);
   }
+  // sortTodos(todos);
 }
 
-export function toggleTodo(todo: Todo) {
+function toggleTodo(todo: Todo) {
   exports.changeTodo(todo);
   exports.createHtml(todos);
 }
@@ -81,4 +90,5 @@ export function clearTodos(todos: Todo[]) {
   exports.createHtml(todos);
 }
 
-exports.createHtml(todos);
+init();
+// createHtml(todos);
