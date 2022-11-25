@@ -2,57 +2,29 @@
  * @jest-environment jsdom
  */
 
+import * as fnfunctions from "./../ts/functions";
 import * as functions from "../ts/main";
 import { Todo } from "../ts/models/Todo";
 
-test("should be able to click", () => {
-  // Arrange
-  let spy = jest.spyOn(functions, "createNewTodo").mockReturnValue();
-  document.body.innerHTML = `<form id="newTodoForm"><div>
-  <input type="text" id="newTodoText" />
-  <button>Skapa</button>
-    </div></form>`;
-  let todos: Todo[] = [new Todo("inlämning", false)];
-  let text = "inlämning";
-  functions.init();
+describe("createHtml", () => {
+  test("should setItem to localStorage", () => {
+    let todos: Todo[] = [new Todo("Inlämning", false)];
 
-  // Act
-  document.querySelector("button")?.click();
+    functions.createHtml(todos);
 
-  // Assert
-  expect(spy).toHaveBeenCalled();
-});
-
-test("should call clearTodos", () => {
-  // Arrange
-  let todos: Todo[] = [new Todo("inlämning", false)];
-  let spy = jest.spyOn(functions, "clearTodos").mockReturnValue();
-  document.body.innerHTML = `<button type="button" id="clearTodos">Rensa lista</button>`;
-  functions.init();
-
-  // Act
-  document.getElementById("clearTodos")?.click();
-
-  // Assert
-  expect(spy).toHaveBeenCalled();
-});
-
-/* test("should toggle todos", () => {
-  // Arrange
-  let todo: Todo = new Todo("inlämning", false);
-  let spy = jest.spyOn(functions, "toggleTodo").mockReturnValue();
-  document.body.innerHTML = `<ul id="todos" class="todo"><li></li></ul>`;
-  document.querySelector("li")?.addEventListener("click", () => {
-    functions.toggleTodo(todo);
+    expect(todos.length).toBeGreaterThan(0);
   });
 
-  // Act
-  document.querySelector("li")?.click();
+  test("test for loop", () => {
+    let todos: Todo[] = [new Todo("Inlämning", false)];
+    document.body.innerHTML = `<ul id="todos" class="todo"></ul>`;
+    let ul = document.getElementById("todos");
 
-  // Assert
-  expect(spy).toHaveBeenCalled();
-}); */
+    functions.createHtml(todos);
 
+    expect(ul?.innerHTML).toBe(`<li class="todo__text">${todos[0].text}</li>`);
+  });
+});
 describe("displayError", () => {
   test("should add HTML to div", () => {
     //Arrange
@@ -101,56 +73,95 @@ describe("displayError", () => {
 });
 
 describe("createNewTodo", () => {
-  test("Should create a html for Todo", () => {
+  test("Should call createHtml for Todo", () => {
     // arrange
     let spy = jest.spyOn(functions, "createHtml").mockReturnValue();
-    let todoText: string = "Perry";
-    let todos: Todo[] = [new Todo("Maxxy", false)];
+    let todoText: string = "inlämning";
+    let todos: Todo[] = [new Todo("Inlämning", false)];
     // act
     functions.createNewTodo(todoText, todos);
     // assert
-    expect(spy).toBeCalledTimes(1);
+    expect(spy).toBeCalled();
   });
 
-  test("Should not create a html for Todo", () => {
+  test("Should not call createHtml for Todo", () => {
     // arrange
     let spy = jest.spyOn(functions, "displayError").mockReturnValue();
-    let todoText: string = "Pe";
-    let todos: Todo[] = [new Todo("Maxxy", false)];
+    let todoText: string = "l";
+    let todos: Todo[] = [new Todo("Inlämning", false)];
 
     // act
     functions.createNewTodo(todoText, todos);
 
     // assert
-    expect(spy).toBeCalledTimes(1);
+    expect(spy).toBeCalled();
   });
 });
 
-/* describe("createHtml", () => {
-  test("should add class to list item element", () => {
-    document.body.innerHTML = `<ul id="todos" class="todo"><li></li></ul>`;
-    let todos: Todo[] = [new Todo("inlämning", true)];
-    let text = "inlämning";
+describe("toggleTodo", () => {
+  test("should call changeTodo", () => {
+    let spy = jest.spyOn(fnfunctions, "changeTodo").mockReturnValue();
+    let todo: Todo = new Todo("inlämning", false);
+    functions.toggleTodo(todo);
 
-    for (let i = 0; i < todos.length; i++) {
-      if (todos[i].done) {
-        document.querySelector("li")?.classList.add("todo__text--done");
-      }
-    }
-
-    expect(document.querySelector("li")?.classList[0]).toBe("todo__text--done");
+    expect(spy).toHaveBeenCalled();
   });
+  test("should call createHtml", () => {
+    let spy = jest.spyOn(functions, "createHtml").mockReturnValue();
+    let todo: Todo = new Todo("inlämning", false);
 
-  test("should appendChild to container", () => {
-    document.body.innerHTML = `<ul id="todos" class="todo"></ul>`;
-    let todosContainer: HTMLUListElement = document.getElementById(
-      "todos"
-    ) as HTMLUListElement;
-    document.body.innerHTML = `<li></li>`;
-    let li: HTMLLIElement = document.querySelector("li") as HTMLLIElement;
+    functions.toggleTodo(todo);
 
-    todosContainer.appendChild(li);
-
-    expect(todosContainer.innerHTML).toBe(`<li></li>`);
+    expect(spy).toHaveBeenCalled();
   });
-}); */
+});
+
+describe("clearTodos", () => {
+  test("should call removeAllTodos", () => {
+    let spy = jest.spyOn(fnfunctions, "removeAllTodos").mockReturnValue();
+    let todos: Todo[] = [new Todo("inlämning", false)];
+    functions.clearTodos(todos);
+
+    expect(spy).toHaveBeenCalled();
+  });
+  test("should call createHtml", () => {
+    let spy = jest.spyOn(functions, "createHtml").mockReturnValue();
+    let todos: Todo[] = [new Todo("inlämning", false)];
+
+    functions.clearTodos(todos);
+
+    expect(spy).toHaveBeenCalled();
+  });
+});
+
+test("should be able to click", () => {
+  // Arrange
+  let spy = jest.spyOn(functions, "createNewTodo").mockReturnValue();
+  document.body.innerHTML = `<form id="newTodoForm"><div>
+  <input type="text" id="newTodoText" />
+  <button>Skapa</button>
+    </div></form>`;
+  let todos: Todo[] = [new Todo("inlämning", false)];
+  let text = "inlämning";
+  functions.init();
+
+  // Act
+  document.querySelector("button")?.click();
+
+  // Assert
+  expect(spy).toHaveBeenCalled();
+});
+
+test("should be able to click clearTodo", () => {
+  // Arrange
+  let todos: Todo[] = [new Todo("inlämning", false)];
+  let spy = jest.spyOn(functions, "clearTodos").mockReturnValue();
+  document.body.innerHTML = `<button type="button" id="clearTodos">Rensa lista</button>`;
+  functions.init();
+
+  // Act
+  document.getElementById("clearTodos")?.click();
+
+  // Assert
+  expect(spy).toHaveBeenCalled();
+});
